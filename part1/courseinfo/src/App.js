@@ -9,7 +9,6 @@ const Header = (props) => {
 }
 
 const Content = (props) => {
-  console.log("Content Comp", props)
   return (
     <div>
       <Part part={props.parts[0].name} exercises={props.parts[0].exercises} />
@@ -20,7 +19,6 @@ const Content = (props) => {
 }
 
 const Part = (props) => {
-  console.log("Part Comp", props)
   return (
     <div>
       <p>
@@ -31,7 +29,6 @@ const Part = (props) => {
 }
 
 const Total = (props) => {
-  console.log("Total Comp", props)
   return (
     <div>
       <p>
