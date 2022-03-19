@@ -18,33 +18,40 @@ const App = () => {
   ]
 
   const [selected, setSelected] = useState(0)
-  // const [votes, setVotes] = useState(0)
-
-  const votes = {
-    0: 0,
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-    6: 0,
-  }
+  const [votes, setVotes] = useState(new Array(7).fill(0))
+  const [maxVotesIndex, setMaxVotesIndex] = useState(0)
+  const [maxVotes, setMaxVotes] = useState(0)
 
   const handleRandomClick = () => {
     setSelected(Math.floor(Math.random() * anecdotes.length))
   }
+
   const handleVotesClick = () => {
-    setVotes(votes + 1)
+    const newCopyOfVotes = [...votes]
+    newCopyOfVotes[selected] += 1
+    setVotes(newCopyOfVotes)
+    if (newCopyOfVotes[selected] > maxVotes) {
+      setMaxVotes(newCopyOfVotes[selected])
+      setMaxVotesIndex(selected)
+    }
   }
-  debugger
+
   return (
     <div>
+      <h1>Anecdote of the day</h1>
+      <Button handleClick={handleVotesClick} text="vote" />
       <Button handleClick={handleRandomClick} text="next anecdote" /> <br />
-      <Button handleClick={handleVotesClick} text="vote" /> <br />
       <br />
-      {anecdotes[selected]}
+      has {votes[selected]} votes.<br />
+      <br />
+      {anecdotes[selected]} <br />
+      <h1>Anecdote with most votes</h1>
+      has {maxVotes} votes.<br />
+      <br />
+      {anecdotes[maxVotesIndex]} <br />
+
     </div>
   )
 }
 
-export default App;
+export default App
