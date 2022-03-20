@@ -1,27 +1,65 @@
-const App = () => {
-  const course = 'Half Stack application development'
-  const part1 = 'Fundamentals of React'
-  const exercises1 = 10
-  const part2 = 'Using props to pass data'
-  const exercises2 = 7
-  const part3 = 'State of a component'
-  const exercises3 = 14
-
+const Header = ({ courseTitle }) => {
   return (
     <div>
-      <h1>{course}</h1>
-      <p>
-        {part1} {exercises1}
-      </p>
-      <p>
-        {part2} {exercises2}
-      </p>
-      <p>
-        {part3} {exercises3}
-      </p>
-      <p>Number of exercises {exercises1 + exercises2 + exercises3}</p>
+      <h1>{courseTitle}</h1>
     </div>
   )
+}
+
+const Part = ({ partName, partExercises }) => {
+  return (
+    <div>
+      {partName} {partExercises}
+    </div>
+  )
+}
+
+const Content = ({ coursePart }) => {
+  return (
+    <div>
+      {coursePart.map(item =>
+        <li key={item.id}>
+          <Part partName={item.name} partExercises={item.exercises} />
+        </li>
+      )}
+    </div>
+  )
+}
+
+const Course = ({ course }) => {
+  return (
+    <div>
+      <Header courseTitle={course.name} />
+      <ul>
+        <Content coursePart={course.parts} />
+      </ul>
+    </div>
+  )
+}
+
+const App = () => {
+  const course = {
+    id: 1,
+    name: 'Half stack application development',
+    parts: [
+      {
+        name: 'Fundamentals of React',
+        exercises: 10,
+        id: 1
+      },
+      {
+        name: 'Using props to pass data',
+        exercises: 7,
+        id: 2
+      },
+      {
+        name: 'State of component',
+        exercises: 14,
+        id: 3
+      }
+    ]
+  }
+  return <Course course={course} />
 }
 
 export default App
