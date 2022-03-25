@@ -1,77 +1,52 @@
-const Header = ({ courseTitle }) => {
-  return (
-    <div>
-      <h1>{courseTitle}</h1>
-    </div>
-  )
-}
-
-const Part = ({ partName, partExercises }) => {
-  return (
-    <div>
-      {partName} {partExercises}
-    </div>
-  )
-}
-
-const Content = ({ coursePart }) => {
-  return (
-    <div>
-      {coursePart.map(item =>
-        <li key={item.id}>
-          <Part partName={item.name} partExercises={item.exercises} />
-        </li>
-      )}
-    </div>
-  )
-}
-
-const Sum = ({ coursePart }) => {
-  return (
-    <div style={{ fontWeight: 'bold' }}>
-      Total of {coursePart.reduce((sum, part) =>
-        sum + part.exercises,
-        0
-      )} exercises
-    </div>
-  )
-}
-
-const Course = ({ course }) => {
-  return (
-    <div>
-      <Header courseTitle={course.name} />
-      <ul>
-        <Content coursePart={course.parts} />
-        <Sum coursePart={course.parts} />
-      </ul>
-    </div>
-  )
-}
+import Course from './components/Course'
 
 const App = () => {
-  const course = {
-    id: 1,
-    name: 'Half stack application development',
-    parts: [
-      {
-        name: 'Fundamentals of React',
-        exercises: 10,
-        id: 1
-      },
-      {
-        name: 'Using props to pass data',
-        exercises: 7,
-        id: 2
-      },
-      {
-        name: 'State of component',
-        exercises: 14,
-        id: 3
-      }
-    ]
-  }
-  return <Course course={course} />
+  const courses = [
+    {
+      id: 1,
+      name: 'Half stack application development',
+      parts: [
+        {
+          name: 'Fundamentals of React',
+          exercises: 10,
+          id: 1
+        },
+        {
+          name: 'Using props to pass data',
+          exercises: 7,
+          id: 2
+        },
+        {
+          name: 'State of component',
+          exercises: 14,
+          id: 3
+        },
+        {
+          name: 'Redux',
+          exercises: 11,
+          id: 4
+        }
+      ]
+    },
+    {
+      name: 'Node.js',
+      id: 2,
+      parts: [
+        {
+          name: 'Routing',
+          exercises: 3,
+          id: 1
+        },
+        {
+          name: 'Middlewares',
+          exercises: 7,
+          id: 2
+        }
+      ]
+    }
+  ]
+
+  return (courses.map(courseObj => <Course key={courseObj.id} course={courseObj} />))
 }
 
 export default App
