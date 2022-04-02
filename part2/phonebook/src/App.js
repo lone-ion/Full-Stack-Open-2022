@@ -1,14 +1,23 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Persons from "./components/Persons"
 import Search from "./components/Search"
 import PersonForm from "./components/PersonForm"
+import axios from "axios"
 
 
-const App = ({ personsArr }) => {
-  const [persons, setPersons] = useState(personsArr)
+const App = () => {
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [charFilter, setCharFilter] = useState('')
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        setPersons(response.data)
+      })
+  }, [])
 
   const applyCharFilter = persons.filter(person => person.name.toLowerCase().includes(charFilter.toLowerCase()))
   const personsToShow = charFilter === ''
