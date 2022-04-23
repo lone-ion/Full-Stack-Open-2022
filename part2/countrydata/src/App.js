@@ -9,7 +9,24 @@ const Filter = ({ newChar, handleFilter }) => {
   );
 };
 
-const Country = ({ name, capital, area, languages, flags }) => {
+const Details = ({ name, capital, area, languages, flags }) => {
+  const [main, setMain] = useState({});
+  const [wind, setWind] = useState({});
+  const [weather, setWeather] = useState([]);
+
+  useEffect(() => {
+    const api_key = process.env.REACT_APP_API_KEY;
+    axios
+      .get(
+        `http://api.openweathermap.org/data/2.5/weather?q=${capital}&appid=${api_key}`
+      )
+      .then((response) => {
+        setMain(response.data.main);
+        setWind(response.data.wind);
+        setWeather(response.data.weather[0]);
+      });
+  }, [capital]);
+
   return (
     <div>
       <h2>{name.common}</h2>
@@ -19,22 +36,27 @@ const Country = ({ name, capital, area, languages, flags }) => {
       <ul>
         <LanguageList languages={languages} />
       </ul>
-      {/* <div style={{ fontSize: '200px' }}> {flag} </div> */}
       <img
         style={{ width: '150px', height: '150px' }}
         src={flags.png}
         alt='country flag'
       />
+      <h3>Weather in {name.common}</h3>
+      <p>temperature {(main.temp - 273.15).toFixed(2)} Celcius</p>
+      <img
+        src={`http://openweathermap.org/img/wn/${weather.icon}@2x.png`}
+        alt='Weather Icon'
+      />
+      <p>wind {wind.speed} m/s</p>
     </div>
   );
 };
 
-const Show = ({ countries }) => {
+const CountryList = ({ name, handleClick, cca2 }) => {
   return (
     <div>
-      {countries.map((country) => (
-        <div key={country.population}>{country.name.common}</div>
-      ))}
+      {name.common}
+      <button onClick={() => handleClick(cca2)}>show</button>
     </div>
   );
 };
@@ -45,19 +67,28 @@ const LanguageList = ({ languages }) => {
   ));
 };
 
-const Display = ({ countries }) => {
-  if (countries.length > 10) {
+const Display = ({ results, handleClick, countryDetails }) => {
+  if (results.length > 10) {
     return <div>Too many matches, specify another filter</div>;
-  } else if (countries.length === 1) {
-    return countries.map((country) => (
-      <Country key={country.population} {...country} />
+  } else if (results.length === 1) {
+    return <Details {...results[0]} />;
+  } else if (countryDetails.length === 1) {
+    return <Details {...countryDetails[0]} />;
+  } else
+    return results.map((country) => (
+      <CountryList
+        key={country.cca2}
+        {...country}
+        handleClick={handleClick}
+        countryDetails={countryDetails}
+      />
     ));
-  } else return <Show countries={countries} />;
 };
 
 const App = () => {
   const [newChar, setNewChar] = useState('');
   const [countries, setCountries] = useState([]);
+  const [countryDetails, setCountryDetails] = useState([]);
 
   const results = countries.filter((country) =>
     country.name.common.toLowerCase().includes(newChar.toLowerCase())
@@ -71,12 +102,22 @@ const App = () => {
 
   const handleFilter = (event) => {
     setNewChar(event.target.value);
+    setCountryDetails([]);
+  };
+
+  const handleClick = (cca2) => {
+    let showCountry = results.filter((country) => country.cca2 === cca2);
+    setCountryDetails(showCountry);
   };
 
   return (
     <div>
       <Filter newChar={newChar} handleFilter={handleFilter} />
-      <Display countries={results} />
+      <Display
+        results={results}
+        countryDetails={countryDetails}
+        handleClick={handleClick}
+      />
     </div>
   );
 };
