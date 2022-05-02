@@ -1,87 +1,84 @@
-import { useState, useEffect } from "react"
-import Persons from "./components/Persons"
-import Search from "./components/Search"
-import PersonForm from "./components/PersonForm"
-import axios from "axios"
-
+import { useState, useEffect } from 'react';
+import personService from './services/persons';
+import Display from './components/Display';
+import Search from './components/Search';
+import Form from './components/Form';
 
 const App = () => {
-  const [persons, setPersons] = useState([])
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
-  const [charFilter, setCharFilter] = useState('')
+  const [persons, setPersons] = useState([]);
+  const [newName, setNewName] = useState('');
+  const [newNumber, setNewNumber] = useState('');
+  const [charFilter, setCharFilter] = useState('');
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-      })
-  }, [])
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
+    });
+  }, []);
 
-  const applyCharFilter = persons.filter(person => person.name.toLowerCase().includes(charFilter.toLowerCase()))
-  const personsToShow = charFilter === ''
-    ? persons
-    : applyCharFilter
+  const applyCharFilter = persons.filter((person) =>
+    person.name.toLowerCase().includes(charFilter.toLowerCase())
+  );
+  const personsToShow = charFilter === '' ? persons : applyCharFilter;
 
-  const addPerson = (event) => {
-    event.preventDefault()
-    const names = persons.map(person => person.name)
-    const exists = names.includes(newName)
+  const createPersonObj = (event) => {
+    event.preventDefault();
+    const personObj = {
+      name: newName,
+      number: newNumber,
+    };
 
-    if (!exists) {
-      const personObj = {
-        name: newName,
-        number: newNumber,
-        id: persons.length + 1,
-      }
-      setPersons(persons.concat(personObj))
-      setNewName('')
-      setNewNumber('')
+    personService.create(personObj).then((returnedPerson) => {
+      setPersons(persons.concat(returnedPerson));
+      setNewName('');
+      setNewNumber('');
+    });
+  };
+
+  const deletePerson = (id) => {
+    const personToDelete = persons.filter((n) => n.id === id);
+    if (window.confirm('Delete ' + personToDelete.map((n) => n.name) + ' ?')) {
+      personService
+        .deleteObj(id)
+        .then(setPersons(persons.filter((n) => n.id !== id)));
     }
-    else {
-      alert(`${newName} is already added to phonebook`)
-      setNewName('')
-    }
-  }
+  };
 
-  const handleNameChange = (event) => {
-    setNewName(event.target.value)
-  }
+  const handleNewName = (event) => {
+    setNewName(event.target.value);
+  };
 
-  const handleNumberChange = (event) => {
-    setNewNumber(event.target.value)
-  }
+  const handleNewNumber = (event) => {
+    setNewNumber(event.target.value);
+  };
 
-  const handleFilterChange = (event) => {
-    setCharFilter(event.target.value)
-  }
+  const handleFilter = (event) => {
+    setCharFilter(event.target.value);
+  };
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Search
-        charFilter={charFilter}
-        handleFilterChange={handleFilterChange}
-      />
+      <Search charFilter={charFilter} handleFilter={handleFilter} />
       <h2>add a new</h2>
-      <PersonForm
+      <Form
         newName={newName}
         newNumber={newNumber}
-        addPerson={addPerson}
-        handleNameChange={handleNameChange}
-        handleNumberChange={handleNumberChange}
+        createPersonObj={createPersonObj}
+        handleNewName={handleNewName}
+        handleNewNumber={handleNewNumber}
       />
       <h2>Numbers</h2>
-      {personsToShow.map(person =>
-        <Persons
+      {personsToShow.map((person) => (
+        <Display
           key={person.id}
           name={person.name}
           number={person.number}
+          deletePerson={() => deletePerson(person.id)}
         />
-      )}
+      ))}
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
