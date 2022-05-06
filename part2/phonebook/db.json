@@ -2,7 +2,7 @@
   "persons": [
     {
       "name": "Arto Hellas",
-      "number": "040-123456",
+      "number": "030-920-698840",
       "id": 1
     },
     {
@@ -12,8 +12,13 @@
     },
     {
       "name": "Dan Abramov",
-      "number": "12-43-234345",
+      "number": "035-88-890000",
       "id": 3
+    },
+    {
+      "name": "Bingo Trusard",
+      "number": "21-390-553322",
+      "id": 4
     }
   ]
 }
