@@ -1,68 +1,110 @@
 import { useState, useEffect } from 'react';
-import personService from './services/persons';
+import recordService from './services/persons';
 import Display from './components/Display';
 import Search from './components/Search';
 import Form from './components/Form';
+import './index.css';
 
 const App = () => {
-  const [persons, setPersons] = useState([]);
+  const [records, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
-  const [charFilter, setCharFilter] = useState('');
+  const [filter, setCharFilter] = useState('');
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [confirmMessage, setConfirmMessage] = useState(null);
 
   useEffect(() => {
-    personService.getAll().then((initialPersons) => {
-      setPersons(initialPersons);
+    recordService.getAll().then((persons) => {
+      setPersons(persons);
     });
   }, []);
 
-  const applyCharFilter = persons.filter((person) =>
-    person.name.toLowerCase().includes(charFilter.toLowerCase())
+  const filteredRecords = records.filter((person) =>
+    person.name.toLowerCase().includes(filter.toLowerCase())
   );
-  const personsToShow = charFilter === '' ? persons : applyCharFilter;
+  const recordsToShow = filter === '' ? records : filteredRecords;
 
-  const createPersonObj = (event) => {
+  const lookupPerson = (event) => {
     event.preventDefault();
-    const names = persons.map((person) => person.name);
+    const names = records.map((person) => person.name);
     const exists = names.includes(newName);
 
     if (!exists) {
-      const personObj = {
-        name: newName,
-        number: newNumber,
-      };
-      personService.create(personObj).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setNewName('');
-        setNewNumber('');
-      });
+      createPerson();
     } else {
       if (
         window.confirm(
           `${newName} is already added to phonebook, replace old number with a new one?`
         )
       ) {
-        const per = persons.find((n) => n.name === newName);
-        console.log(per.id);
-        const changedPerson = { ...per, number: newNumber };
-
-        personService.update(per.id, changedPerson).then((returnedPerson) => {
-          setPersons(
-            persons.map((n) => (n.id !== per.id ? n : returnedPerson))
-          );
-          setNewName('');
-          setNewNumber('');
-        });
+        updatePhoneNumber();
       }
     }
   };
 
+  const updatePhoneNumber = () => {
+    const per = records.find((n) => n.name === newName);
+    const changedPerson = { ...per, number: newNumber };
+
+    recordService
+      .update(per.id, changedPerson)
+      .then((returnedPerson) => {
+        setPersons(records.map((n) => (n.id !== per.id ? n : returnedPerson)));
+        setNewName('');
+        setNewNumber('');
+        setConfirmMessage(`Updated ${newName} number`);
+        setTimeout(() => {
+          setConfirmMessage(null);
+        }, 5000);
+      })
+      .catch((error) => {
+        setErrorMessage(`Person ${per.name} was already removed from server!`);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+        setPersons(records.filter((n) => n.id !== per.id));
+        setNewName('');
+        setNewNumber('');
+      });
+  };
+
+  const createPerson = () => {
+    const personObj = {
+      name: newName,
+      number: newNumber,
+    };
+    recordService.create(personObj).then((returnedPerson) => {
+      setPersons(records.concat(returnedPerson));
+      setNewName('');
+      setNewNumber('');
+      setConfirmMessage(`Added ${newName}`);
+      setTimeout(() => {
+        setConfirmMessage(null);
+      }, 5000);
+    });
+  };
+
   const deletePerson = (id) => {
-    const personToDelete = persons.filter((n) => n.id === id);
-    if (window.confirm('Delete ' + personToDelete.map((n) => n.name) + ' ?')) {
-      personService
+    const personToDelete = records.find((n) => n.id === id);
+    if (window.confirm('Delete ' + personToDelete.name + ' ?')) {
+      recordService
         .deleteObj(id)
-        .then(setPersons(persons.filter((n) => n.id !== id)));
+        .then(() => {
+          setPersons(records.filter((n) => n.id !== id));
+          setConfirmMessage(`${personToDelete.name} deleted!`);
+          setTimeout(() => {
+            setConfirmMessage(null);
+          }, 5000);
+        })
+        .catch((error) => {
+          setErrorMessage(
+            `Person ${personToDelete.name} was already removed from server!`
+          );
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
+          setPersons(records.filter((n) => n.id !== personToDelete.id));
+        });
     }
   };
 
@@ -78,20 +120,32 @@ const App = () => {
     setCharFilter(event.target.value);
   };
 
+  const Notification = ({ errorMessage, confirmMessage }) => {
+    if (errorMessage) {
+      return <div className='error'>{errorMessage}</div>;
+    }
+    if (confirmMessage) {
+      return <div className='confirm'>{confirmMessage}</div>;
+    }
+    return null;
+  };
+
   return (
     <div>
-      <h2>Phonebook</h2>
-      <Search charFilter={charFilter} handleFilter={handleFilter} />
+      <h1>Phonebook</h1>
+      <Notification confirmMessage={confirmMessage} />
+      <Notification errorMessage={errorMessage} />
+      <Search filter={filter} handleFilter={handleFilter} />
       <h2>add a new</h2>
       <Form
         newName={newName}
         newNumber={newNumber}
-        createPersonObj={createPersonObj}
+        lookupPerson={lookupPerson}
         handleNewName={handleNewName}
         handleNewNumber={handleNewNumber}
       />
       <h2>Numbers</h2>
-      {personsToShow.map((person) => (
+      {recordsToShow.map((person) => (
         <Display
           key={person.id}
           name={person.name}

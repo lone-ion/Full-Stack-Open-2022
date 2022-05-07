@@ -1,14 +1,14 @@
 import React from 'react';
 
 const Form = ({
-  createPersonObj,
+  lookupPerson,
   newName,
   handleNewName,
   newNumber,
   handleNewNumber,
 }) => {
   return (
-    <form onSubmit={createPersonObj}>
+    <form onSubmit={lookupPerson}>
       <div>
         name: <input value={newName} onChange={handleNewName} />
       </div>

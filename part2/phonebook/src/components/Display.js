@@ -2,7 +2,7 @@ import React from 'react';
 
 const Display = ({ name, number, deletePerson }) => {
   return (
-    <div>
+    <div className='person'>
       {name} {number}
       <button onClick={deletePerson}>Delete</button>
     </div>
