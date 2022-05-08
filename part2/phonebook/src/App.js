@@ -43,13 +43,15 @@ const App = () => {
   };
 
   const updatePhoneNumber = () => {
-    const per = records.find((n) => n.name === newName);
-    const changedPerson = { ...per, number: newNumber };
+    const foundPerson = records.find((n) => n.name === newName);
+    const updatedPerson = { ...foundPerson, number: newNumber };
 
     recordService
-      .update(per.id, changedPerson)
-      .then((returnedPerson) => {
-        setPersons(records.map((n) => (n.id !== per.id ? n : returnedPerson)));
+      .update(updatedPerson.id, updatedPerson)
+      .then((returnedRecord) => {
+        setPersons(
+          records.map((n) => (n.id !== updatedPerson.id ? n : returnedRecord))
+        );
         setNewName('');
         setNewNumber('');
         setConfirmMessage(`Updated ${newName} number`);
@@ -58,11 +60,13 @@ const App = () => {
         }, 5000);
       })
       .catch((error) => {
-        setErrorMessage(`Person ${per.name} was already removed from server!`);
+        setErrorMessage(
+          `Person ${updatedPerson.name} was already removed from server!`
+        );
         setTimeout(() => {
           setErrorMessage(null);
         }, 5000);
-        setPersons(records.filter((n) => n.id !== per.id));
+        setPersons(records.filter((n) => n.id !== updatedPerson.id));
         setNewName('');
         setNewNumber('');
       });
@@ -73,8 +77,8 @@ const App = () => {
       name: newName,
       number: newNumber,
     };
-    recordService.create(personObj).then((returnedPerson) => {
-      setPersons(records.concat(returnedPerson));
+    recordService.create(personObj).then((returnedRecord) => {
+      setPersons(records.concat(returnedRecord));
       setNewName('');
       setNewNumber('');
       setConfirmMessage(`Added ${newName}`);
@@ -84,7 +88,7 @@ const App = () => {
     });
   };
 
-  const deletePerson = (id) => {
+  const removePerson = (id) => {
     const personToDelete = records.find((n) => n.id === id);
     if (window.confirm('Delete ' + personToDelete.name + ' ?')) {
       recordService
@@ -150,7 +154,7 @@ const App = () => {
           key={person.id}
           name={person.name}
           number={person.number}
-          deletePerson={() => deletePerson(person.id)}
+          removePerson={() => removePerson(person.id)}
         />
       ))}
     </div>
