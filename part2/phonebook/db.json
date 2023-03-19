@@ -1,0 +1,24 @@
+{
+  "persons": [
+    {
+      "name": "Arto Hellas",
+      "number": "030-920-698840",
+      "id": 1
+    },
+    {
+      "name": "Ada Lovelace",
+      "number": "39-44-5323523",
+      "id": 2
+    },
+    {
+      "name": "Dan Abramov",
+      "number": "035-88-890000",
+      "id": 3
+    },
+    {
+      "name": "Bingo Trusard",
+      "number": "21-390-553322",
+      "id": 4
+    }
+  ]
+}

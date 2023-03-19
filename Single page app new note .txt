@@ -1,0 +1,26 @@
+title Single page app new note 
+
+note over browser:
+The event handler creates a new note,
+adds it to the notes list,
+rerenders the note list on the page
+and sends the new note to the server.
+end note
+
+note over browser:
+The POST request to the address new_note_spa
+contains the new note as JSON-data containing
+both the content of the note (content)
+and the timestamp (date)
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+note over server:
+Server adds note to notes
+list and sends back an HTTP
+201 code that new note has
+created.
+end note
+
+server-->browser: HTTP code 201 Created
