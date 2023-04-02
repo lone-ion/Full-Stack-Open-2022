@@ -7,12 +7,16 @@ const Blog = require('../models/blog')
 
 const initialBlogs = [
    {
-      content: '',
-      important: false,
+      title: "Super easy programming tools",
+      author: "Mia Lasa",
+      url: "www.searchTech.test",
+      likes: "115"
    },
    {
-      content: '',
-      important: true,
+      title: "There is something out there",
+      author: "Pietr Blachos",
+      url: "www.theUnknown.test",
+      likes: "307"
    },
 ]
 
@@ -55,6 +59,30 @@ test('unique identifier property of the blog posts is named id', async () => {
       }
    }
 
+})
+
+test('verify that a POST request to the /api/blogs successfully creates a new blog post', async () => {
+   const newBlog = {
+      title: "Learning node.js is a lot of fun",
+      author: "Selsky Atomov",
+      url: "www.focusOnYourAbilities.test",
+      likes: "176"
+   }
+
+   await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+   const response = await api.get('/api/blogs')
+
+   const titles = response.body.map(r => r.title)
+
+   expect(response.body).toHaveLength(initialBlogs.length + 1)
+   expect(titles).toContain(
+      'Learning node.js is a lot of fun'
+   )
 })
 
 afterAll(async () => {
