@@ -54,11 +54,13 @@ test('unique identifier property of the blog posts is named id', async () => {
    const response = await api.get('/api/blogs')
 
    for (objItem of response.body) {
+      const hasIdProperty = Object.keys(objItem).includes("id")
+      expect(hasIdProperty).toBe(true)
+
       for (prop in objItem) {
          expect(prop).toBeDefined();
       }
    }
-
 })
 
 test('verify that a POST request to the /api/blogs successfully creates a new blog post', async () => {
