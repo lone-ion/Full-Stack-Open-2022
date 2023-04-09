@@ -41,15 +41,6 @@ test('all blogs are returned', async () => {
    expect(response.body).toHaveLength(initialBlogs.length)
 })
 
-
-// test('a specific note is within the returned notes', async () => {
-//    const response = await api.get('/api/notes')
-
-//    const contents = response.body.map(r => r.content)
-//    expect(contents).toContain('Browser can execute only JavaScript')
-// })
-
-
 test('unique identifier property of the blog posts is named id', async () => {
    const response = await api.get('/api/blogs')
 
@@ -60,6 +51,24 @@ test('unique identifier property of the blog posts is named id', async () => {
          expect(prop).toBeDefined();
       }
    }
+})
+
+test('if the likes property is missing, it will default to 0', async () => {
+   const newBlog = {
+      title: "Advancing to a new era",
+      author: "Abdel Chustra",
+      url: "www.moretocome.test"
+   }
+
+   await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+
+   const response = await api.get('/api/blogs')
+   const savedBlog = response.body.find(blog => blog.title === "Advancing to a new era")
+   expect(Object.keys(savedBlog)).toContain("likes")
+   expect(savedBlog.likes).toBe(0)
 })
 
 test('verify that a POST request to the /api/blogs successfully creates a new blog post', async () => {
