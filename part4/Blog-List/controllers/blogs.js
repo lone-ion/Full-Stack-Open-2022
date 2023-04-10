@@ -6,13 +6,22 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
+blogsRouter.get('/:id', async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+      if (blog) {
+        response.json(blog)
+      } else {
+        response.status(404).end()
+      }
+    })
+
 blogsRouter.post('/', async (request, response) => {
   const body = request.body
 
   if (body.title === undefined || body.author === undefined) {
-    return response.status(400).json({ error: 'bad request'})
+    return response.status(400).json({ error: 'bad request' })
   }
-  
+
   const blog = new Blog({
     title: body.title,
     author: body.author,
@@ -20,10 +29,25 @@ blogsRouter.post('/', async (request, response) => {
     likes: body.likes || 0
   })
 
-  console.log(blog);
   const result = await blog.save()
   response.status(201).json(result)
 
+})
+
+blogsRouter.delete('/:id', async (request, response) => {
+  await Blog.findByIdAndRemove(request.params.id)
+  response.status(204).end()
+})
+
+blogsRouter.put('/:id', async (request, response) => {
+  const body = request.body
+
+  const blog = {
+    likes: body.likes,
+  }
+
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+  response.json(updatedBlog)
 })
 
 module.exports = blogsRouter
