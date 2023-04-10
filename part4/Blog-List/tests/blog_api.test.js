@@ -71,12 +71,36 @@ test('if the likes property is missing, it will default to 0', async () => {
    expect(savedBlog.likes).toBe(0)
 })
 
+test('verify missing title or url properties', async () => {
+   const newBlog1 = {
+      title: "The harder the better",
+      url: "www.findnewideas.test",
+      likes: 218
+   }
+
+   const newBlog2 = {
+      author: "Anuli Wangui",
+      url: "www.fineprogramms.test",
+      likes: 86
+   }
+
+   await api
+      .post('/api/blogs')
+      .send(newBlog1)
+      .expect(400)
+
+   await api
+      .post('/api/blogs')
+      .send(newBlog2)
+      .expect(400)
+})
+
 test('verify that a POST request to the /api/blogs successfully creates a new blog post', async () => {
    const newBlog = {
       title: "Learning node.js is a lot of fun",
       author: "Selsky Atomov",
       url: "www.focusOnYourAbilities.test",
-      likes: "176"
+      likes: 176
    }
 
    await api
