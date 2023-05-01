@@ -15,13 +15,23 @@ const initialBlogs = [
    },
 ]
 
-// const nonExistingId = async () => {
-//    const note = new Note({ content: 'willremovethissoon' })
-//    await note.save()
-//    await note.deleteOne()
-
-//    return note._id.toString()
-// }
+const initialUsers = [
+   {
+      username: "mluukkai",
+      name: "Matti Luukkainen",
+      password: "salainen"
+   },
+   {
+      username: "root",
+      name: "superuser",
+      password: "biscot"
+   },
+   {
+      username: "hellas",
+      name: "Arto Hellas",
+      password: "forever"
+   }
+]
 
 const blogsInDb = async () => {
    const blogs = await Blog.find({})
@@ -34,5 +44,5 @@ const usersInDb = async () => {
 }
 
 module.exports = {
-   initialBlogs, blogsInDb, usersInDb
+   initialBlogs, initialUsers, blogsInDb, usersInDb
 }

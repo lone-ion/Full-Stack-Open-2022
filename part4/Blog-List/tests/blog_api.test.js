@@ -10,11 +10,39 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 
 beforeEach(async () => {
+   await User.deleteMany({})
+
+   let passphrase = helper.initialUsers[0].password
+   let passwordHash = await bcrypt.hash(passphrase, 10)
+   let userObject = new User({ username: helper.initialUsers[0].username, name: helper.initialUsers[0].name, passwordHash })
+   await userObject.save()
+
+   passphrase = helper.initialUsers[1].password
+   passwordHash = await bcrypt.hash(passphrase, 10)
+   userObject = new User({ username: helper.initialUsers[1].username, name: helper.initialUsers[1].name, passwordHash })
+   await userObject.save()
+
+   passphrase = helper.initialUsers[2].password
+   passwordHash = await bcrypt.hash(passphrase, 10)
+   userObject = new User({ username: helper.initialUsers[2].username, name: helper.initialUsers[2].name, passwordHash })
+   const user = await userObject.save()
+   user.id = user._id
+
    await Blog.deleteMany({})
    let blogObject = new Blog(helper.initialBlogs[0])
-   await blogObject.save()
+   blogObject.user = user.id
+   let savedBlog = await blogObject.save()
+
+   user.blogs = user.blogs.concat(savedBlog._id)
+   await user.save()
+
+
    blogObject = new Blog(helper.initialBlogs[1])
-   await blogObject.save()
+   blogObject.user = user.id
+   savedBlog = await blogObject.save()
+
+   user.blogs = user.blogs.concat(savedBlog._id)
+   await user.save()
 })
 
 describe('fetching blogs from database', () => {
@@ -54,9 +82,22 @@ describe('blog posts and errors', () => {
          url: "www.focusOnYourAbilities.test",
          likes: 176
       }
+ 
+      const user = {
+         username: "mluukkai",
+         password: "salainen"
+      }
+
+      const result = await api
+         .post('/api/login')
+         .send(user)
+         .expect(200)
+   
+      const token = result.body.token
 
       await api
          .post('/api/blogs')
+         .set("Authorization", `Bearer ${token}`)
          .send(newBlog)
          .expect(201)
          .expect('Content-Type', /application\/json/)
@@ -78,8 +119,21 @@ describe('blog posts and errors', () => {
          url: "www.moretocome.test"
       }
 
+      const user = {
+         username: "mluukkai",
+         password: "salainen"
+      }
+
+      const result = await api
+         .post('/api/login')
+         .send(user)
+         .expect(200)
+
+      const token = result.body.token
+
       await api
          .post('/api/blogs')
+         .set("Authorization", `Bearer ${token}`)
          .send(newBlog)
          .expect(201)
 
@@ -102,13 +156,27 @@ describe('blog posts and errors', () => {
          likes: 86
       }
 
+      const user = {
+         username: "mluukkai",
+         password: "salainen"
+      }
+
+      const result = await api
+         .post('/api/login')
+         .send(user)
+         .expect(200)
+
+      const token = result.body.token
+
       await api
          .post('/api/blogs')
+         .set("Authorization", `Bearer ${token}`)
          .send(newBlog1)
          .expect(400)
 
       await api
          .post('/api/blogs')
+         .set("Authorization", `Bearer ${token}`)
          .send(newBlog2)
          .expect(400)
    })
@@ -119,8 +187,21 @@ test('verify functionality for deleting a single blog post', async () => {
    const blogsAtStart = await api.get('/api/blogs')
    const blogToDelete = blogsAtStart.body[0]
 
+   const user = {
+      username: "hellas",
+      password: "forever"
+   }
+
+   const result = await api
+      .post('/api/login')
+      .send(user)
+      .expect(200)
+
+   const token = result.body.token
+
    await api
       .delete(`/api/blogs/${blogToDelete.id}`)
+      .set("Authorization", `Bearer ${token}`)
       .expect(204)
 
    const blogsAtEnd = await api.get('/api/blogs')
