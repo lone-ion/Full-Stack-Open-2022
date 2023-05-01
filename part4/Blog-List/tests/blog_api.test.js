@@ -112,6 +112,21 @@ describe('blog posts and errors', () => {
       )
    })
 
+   test('verify adding a blog fails with the proper status code 401 Unauthorized if a token is not provided', async () => {
+      const newBlog = {
+         title: "Learning node.js is a lot of fun",
+         author: "Selsky Atomov",
+         url: "www.focusOnYourAbilities.test",
+         likes: 176
+      }
+
+      await api
+         .post('/api/blogs')
+         .send(newBlog)
+         .expect(401)
+         .expect('Content-Type', /application\/json/)
+   })
+
    test('if the likes property is missing, it will default to 0', async () => {
       const newBlog = {
          title: "Advancing to a new era",
