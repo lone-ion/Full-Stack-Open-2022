@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -11,6 +12,8 @@ const App = () => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
   const [user, setUser] = useState(null)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [infoMessage, setInfoMessage] = useState('')
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -40,7 +43,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setErrorMessage('Wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -73,21 +76,25 @@ const App = () => {
     </div>
   )
 
-  const addBlog = (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
+
     const blogObject = {
       title,
       author,
       url,
     }
 
+    const newBlog = await blogService.create(blogObject)
+    setBlogs(blogs.concat(newBlog))
+    setInfoMessage(`A new blog ${newBlog.title} by ${newBlog.author} added`)
+    setTimeout(() => {
+      setInfoMessage(null)
+    }, 5000)
+
     setTitle('')
     setUrl('')
     setAuthor('')
-
-    blogService
-      .create(blogObject)
-      .then((newblog) => setBlogs(blogs.concat(newblog)))
   }
 
   const createBlogForm = () => (
@@ -134,6 +141,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Notification message={errorMessage} />
         {loginForm()}
       </div>
     )
@@ -142,6 +150,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification message={infoMessage} />
       <p>
         {user.name} logged-in
         <button onClick={() => handleUserLogout()}>log out</button>
