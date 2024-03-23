@@ -8,7 +8,7 @@ const BlogForm = ({ createBlog }) => {
   const addBlog = async (event) => {
     event.preventDefault()
 
-    // function createBlog has been pass from App component as a prop
+    // function has been passed from App component as a prop
     createBlog({
       title: newTitle,
       author: newAuthor,
