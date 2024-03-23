@@ -9,10 +9,8 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [user, setUser] = useState(null)
+
   const [errorMessage, setErrorMessage] = useState('')
   const [infoMessage, setInfoMessage] = useState('')
   const [createVisible, setCreateVisible] = useState(false)
@@ -78,6 +76,18 @@ const App = () => {
     </div>
   )
 
+  const addBlog = async (blogObject) => {
+    const newBlog = await blogService.create(blogObject)
+    console.log(newBlog)
+    setBlogs(blogs.concat(newBlog))
+    setInfoMessage(
+      `A new blog ${newBlog.newTitle} by ${newBlog.newAuthor} added`
+    )
+    setTimeout(() => {
+      setInfoMessage(null)
+    }, 5000)
+  }
+
   const blogForm = () => {
     const hideWhenVisible = { display: createVisible ? 'none' : '' }
     const showWhenVisible = { display: createVisible ? '' : 'none' }
@@ -89,40 +99,11 @@ const App = () => {
         </div>
         <div style={showWhenVisible}>
           <h2>create new</h2>
-          <BlogForm
-            title={title}
-            author={author}
-            url={url}
-            handleTitleChange={({ target }) => setTitle(target.value)}
-            handleAuthorChange={({ target }) => setAuthor(target.value)}
-            handleUrlChange={({ target }) => setUrl(target.value)}
-            handleSubmit={addBlog}
-          />
+          <BlogForm createBlog={addBlog} />
           <button onClick={() => setCreateVisible(false)}>cancel</button>
         </div>
       </div>
     )
-  }
-
-  const addBlog = async (event) => {
-    event.preventDefault()
-
-    const blogObject = {
-      title,
-      author,
-      url,
-    }
-
-    const newBlog = await blogService.create(blogObject)
-    setBlogs(blogs.concat(newBlog))
-    setInfoMessage(`A new blog ${newBlog.title} by ${newBlog.author} added`)
-    setTimeout(() => {
-      setInfoMessage(null)
-    }, 5000)
-
-    setTitle('')
-    setUrl('')
-    setAuthor('')
   }
 
   const handleUserLogout = () => {
