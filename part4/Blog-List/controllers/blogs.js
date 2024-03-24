@@ -17,12 +17,8 @@ blogsRouter.get('/:id', async (request, response) => {
 })
 
 blogsRouter.post('/', userExtractor, async (request, response) => {
-  
-
   const body = request.body
   const user = request.user
-
-  
 
   if (body.title === undefined || body.author === undefined) {
     return response.status(400).json({ error: 'bad request' })
@@ -56,8 +52,9 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   }
 })
 
-blogsRouter.put('/:id', async (request, response) => {
+blogsRouter.put('/:id', userExtractor, async (request, response) => {
   const body = request.body
+  // const user = request.user
 
   const blog = {
     likes: body.likes,

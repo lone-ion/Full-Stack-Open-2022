@@ -10,6 +10,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [newUpdatedLikes, setNewUpdatedLikes] = useState('')
 
   const [errorMessage, setErrorMessage] = useState('')
   const [infoMessage, setInfoMessage] = useState('')
@@ -17,7 +18,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+  }, [newUpdatedLikes])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -111,6 +112,15 @@ const App = () => {
     setUser(null)
   }
 
+  const updateBlog = async (id, likes) => {
+    const likesObject = {
+      likes,
+    }
+
+    await blogService.update(id, likesObject)
+    setNewUpdatedLikes(likes + 1)
+  }
+
   if (user === null) {
     return (
       <div>
@@ -131,7 +141,11 @@ const App = () => {
       </p>
       {blogForm()}
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          updateLikes={() => updateBlog(blog.id, blog.likes + 1)}
+        />
       ))}
     </div>
   )
