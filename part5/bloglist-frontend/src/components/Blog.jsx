@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import blogService from '../services/blogs'
 
-const Blog = ({ blog, updateLikes }) => {
+const Blog = ({ blog, buttonReveal, userName, updateLikes, deleteBlog }) => {
   const [detailsVisible, setDetailsVisible] = useState(false)
+
+  const showDeleteButton = { display: buttonReveal ? '' : 'none' }
 
   const blogStyle = {
     paddingTop: 10,
@@ -22,13 +23,17 @@ const Blog = ({ blog, updateLikes }) => {
 
   return (
     <div style={blogStyle}>
-      {blog.title} {blog.author} <br />
+      {blog.title} {blog.author}
+      <button onClick={() => setDetailsVisible(false)}>hide</button>
+      <br />
       {blog.url} <br />
       likes {blog.likes}
       <button onClick={updateLikes}>like</button>
       <br />
-      {blog.user.name} <br />
-      <button onClick={() => setDetailsVisible(false)}>hide</button>
+      {blog.user.name || userName} <br />
+      <button onClick={deleteBlog} style={showDeleteButton}>
+        delete
+      </button>
     </div>
   )
 }
