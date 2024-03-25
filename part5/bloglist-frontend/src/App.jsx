@@ -10,17 +10,18 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [newUpdatedLikes, setNewUpdatedLikes] = useState('')
-  // not a clever solution but updating the flag triggers the useEffect
-  const [deleteFlag, setDeleteFlag] = useState('')
+  const [newLikes, setNewLikes] = useState('')
+  
+  // not a clever solution but updates the flag triggers the useEffect
+  const [displayBlogsAfterDeletion, setDisplayBlogsAfterDeletion] = useState('')
 
   const [errorMessage, setErrorMessage] = useState('')
   const [infoMessage, setInfoMessage] = useState('')
-  const [createVisible, setCreateVisible] = useState(false)
+  const [createButtonVisible, setCreateButtonVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [newUpdatedLikes, deleteFlag])
+  }, [newLikes, displayBlogsAfterDeletion])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -82,6 +83,7 @@ const App = () => {
   const addBlog = async (blogObject) => {
     const newBlog = await blogService.create(blogObject)
     setBlogs(blogs.concat(newBlog))
+    setCreateButtonVisible(false)
     setInfoMessage(`A new blog ${newBlog.title} by ${newBlog.author} added`)
     setTimeout(() => {
       setInfoMessage(null)
@@ -89,18 +91,18 @@ const App = () => {
   }
 
   const blogForm = () => {
-    const hideWhenVisible = { display: createVisible ? 'none' : '' }
-    const showWhenVisible = { display: createVisible ? '' : 'none' }
+    const hideWhenVisible = { display: createButtonVisible ? 'none' : '' }
+    const showWhenVisible = { display: createButtonVisible ? '' : 'none' }
 
     return (
       <div>
         <div style={hideWhenVisible}>
-          <button onClick={() => setCreateVisible(true)}>create</button>
+          <button onClick={() => setCreateButtonVisible(true)}>create</button>
         </div>
         <div style={showWhenVisible}>
           <h2>create new</h2>
           <BlogForm createBlog={addBlog} />
-          <button onClick={() => setCreateVisible(false)}>cancel</button>
+          <button onClick={() => setCreateButtonVisible(false)}>cancel</button>
         </div>
       </div>
     )
@@ -117,8 +119,8 @@ const App = () => {
     }
 
     await blogService.update(id, likesObject)
-    setNewUpdatedLikes(likes + 1)
-  }
+    setNewLikes(previousLikes => previousLikes + 1)
+    }
 
   const handleDelete = async (blogObject) => {
     if (
@@ -128,7 +130,9 @@ const App = () => {
     ) {
       await blogService.remove(blogObject.id)
       // add 1 to change flag and trigger the useEffect hook
-      setDeleteFlag(deleteFlag + 1)
+      setDisplayBlogsAfterDeletion(
+        (previousValue) => previousValue + 1
+      )
     }
   }
 
@@ -161,7 +165,7 @@ const App = () => {
             userName={user.name}
             updateLikes={() => updateBlog(blog.id, blog.likes + 1)}
             deleteBlog={() => handleDelete(blog)}
-          />
+            />
         ))}
     </div>
   )
