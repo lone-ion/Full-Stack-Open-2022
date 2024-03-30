@@ -16,14 +16,14 @@ const Blog = ({ blog, buttonReveal, userName, updateLikes, deleteBlog }) => {
 
   if (!detailsVisible)
     return (
-      <div style={blogStyle}>
+      <div className='non-detailed-blog' style={blogStyle}>
         {blog.title} {blog.author}
         <button onClick={() => setDetailsVisible(true)}>show</button>
       </div>
     )
 
   return (
-    <div style={blogStyle}>
+    <div className='detailed-blog' style={blogStyle}>
       {blog.title} {blog.author}
       <button onClick={() => setDetailsVisible(false)}>hide</button>
       <br />
@@ -40,11 +40,11 @@ const Blog = ({ blog, buttonReveal, userName, updateLikes, deleteBlog }) => {
 }
 
 Blog.propTypes = {
-  deleteBlog: PropTypes.func.isRequired,
-  updateLikes: PropTypes.func.isRequired,
+  deleteBlog: PropTypes.func,
+  updateLikes: PropTypes.func,
   blog: PropTypes.object.isRequired,
-  userName: PropTypes.string.isRequired,
-  buttonReveal: PropTypes.bool.isRequired,
+  userName: PropTypes.string,
+  buttonReveal: PropTypes.bool,
 }
 
 export default Blog

@@ -11,7 +11,7 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [newLikes, setNewLikes] = useState('')
-  
+
   // not a clever solution but updates the flag triggers the useEffect
   const [displayBlogsAfterDeletion, setDisplayBlogsAfterDeletion] = useState('')
 
@@ -119,8 +119,8 @@ const App = () => {
     }
 
     await blogService.update(id, likesObject)
-    setNewLikes(previousLikes => previousLikes + 1)
-    }
+    setNewLikes((previousLikes) => previousLikes + 1)
+  }
 
   const handleDelete = async (blogObject) => {
     if (
@@ -130,9 +130,7 @@ const App = () => {
     ) {
       await blogService.remove(blogObject.id)
       // add 1 to change flag and trigger the useEffect hook
-      setDisplayBlogsAfterDeletion(
-        (previousValue) => previousValue + 1
-      )
+      setDisplayBlogsAfterDeletion((previousValue) => previousValue + 1)
     }
   }
 
@@ -165,7 +163,7 @@ const App = () => {
             userName={user.name}
             updateLikes={() => updateBlog(blog.id, blog.likes + 1)}
             deleteBlog={() => handleDelete(blog)}
-            />
+          />
         ))}
     </div>
   )
