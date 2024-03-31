@@ -11,6 +11,7 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [newLikes, setNewLikes] = useState('')
+  const [newBlog, setNewBlog] = useState({})
 
   // not a clever solution but updates the flag triggers the useEffect
   const [displayBlogsAfterDeletion, setDisplayBlogsAfterDeletion] = useState('')
@@ -21,7 +22,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [newLikes, displayBlogsAfterDeletion])
+  }, [newLikes, displayBlogsAfterDeletion, newBlog])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -81,8 +82,8 @@ const App = () => {
   )
 
   const addBlog = async (blogObject) => {
-    const newBlog = await blogService.create(blogObject)
-    setBlogs(blogs.concat(newBlog))
+    const response = await blogService.create(blogObject)
+    setNewBlog(response)
     setCreateButtonVisible(false)
     setInfoMessage(`A new blog ${newBlog.title} by ${newBlog.author} added`)
     setTimeout(() => {
@@ -160,7 +161,6 @@ const App = () => {
             key={blog.id}
             blog={blog}
             buttonReveal={user.name === (blog.user.name || user.name)}
-            userName={user.name}
             updateLikes={() => updateBlog(blog.id, blog.likes + 1)}
             deleteBlog={() => handleDelete(blog)}
           />
