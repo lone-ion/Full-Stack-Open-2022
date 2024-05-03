@@ -16,14 +16,18 @@ const Blog = ({ blog, buttonReveal, updateLikes, deleteBlog }) => {
 
   if (!detailsVisible)
     return (
-      <div className='non-detailed-blog' style={blogStyle}>
+      <div
+        data-testid='blog-list'
+        className='non-detailed-blog'
+        style={blogStyle}
+      >
         {blog.title} {blog.author}
         <button onClick={() => setDetailsVisible(true)}>show</button>
       </div>
     )
 
   return (
-    <div className='detailed-blog' style={blogStyle}>
+    <div data-testid='blog-list' className='detailed-blog' style={blogStyle}>
       {blog.title} {blog.author}
       <button onClick={() => setDetailsVisible(false)}>hide</button>
       <br />

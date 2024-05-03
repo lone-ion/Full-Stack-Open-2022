@@ -238,10 +238,20 @@ test('verify functionality for updating the information of an individual blog po
       likes: 55
    }
 
+      const user = {
+        username: 'hellas',
+        password: 'forever',
+      }
+
+      const result = await api.post('/api/login').send(user).expect(200)
+
+      const token = result.body.token
+
    await api
-      .put(`/api/blogs/${blogToUpdate.id}`)
-      .send(updateToProperty)
-      .expect(200)
+     .put(`/api/blogs/${blogToUpdate.id}`)
+     .set('Authorization', `Bearer ${token}`)
+     .send(updateToProperty)
+     .expect(200)
 
    const resultBlog = await api
       .get(`/api/blogs/${blogToUpdate.id}`)
@@ -256,7 +266,7 @@ describe('when there is initially one user in db', () => {
       await User.deleteMany({})
 
       const passwordHash = await bcrypt.hash('sekret', 10)
-      const user = new User({ username: 'root', passwordHash })
+      const user = new User({ username: 'root', name: 'Superuser', passwordHash })
 
       await user.save()
    })
