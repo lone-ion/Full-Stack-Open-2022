@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux'
-import anecdoteReducer, { changeVotesOf } from '../reducers/anecdoteReducer'
+import { changeVotesOf } from '../reducers/anecdoteReducer'
 
 const Anecdotes = () => {
   const dispatch = useDispatch()
@@ -13,7 +13,7 @@ const Anecdotes = () => {
 
   return (
     <ul>
-      {anecdotes
+      {[...anecdotes]
         .sort(function (a, b) {
           return b.votes - a.votes
         })
