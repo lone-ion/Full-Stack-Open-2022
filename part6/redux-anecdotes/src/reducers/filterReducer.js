@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const filterSlice = createSlice({
-  name: 'anecdotes',
+  name: 'filtering',
   initialState: 'ALL',
   reducers: {
     filterChange(state, action) {
